@@ -31,12 +31,6 @@ class RevenueEventSubscriber extends WebhookSubscriberBase
      */
     public function onRevenueChange(RevenueChangeEvent $event)
     {
-        $payload = $event->getPayload();
-
-        //trigger_error(json_encode($payload), E_USER_WARNING);
-
-        $webhookEvent = $this->getEventWebooksByType(MauticRevenueEventEvents::REVENUE_CHANGE);
-
-        $this->webhookModel->queueWebhooks($webhookEvent, $payload);
+        //TODO: FIRE WEBHOOK
     }
 }

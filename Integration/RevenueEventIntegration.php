@@ -7,6 +7,11 @@ use Mautic\PluginBundle\Integration\AbstractIntegration;
 class RevenueEventIntegration extends AbstractIntegration
 {
     /**
+     * Integrations Settings Namespace for Campaign List.
+     */
+    const CAMPAIGN_SETTINGS_NAMESPACE = 'campaigns';
+
+    /**
      * Integration Display Name
      */
     const DISPLAY_NAME = 'Revenue Event';

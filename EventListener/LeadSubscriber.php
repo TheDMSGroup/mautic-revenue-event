@@ -15,6 +15,8 @@ use Mautic\CoreBundle\EventListener\CommonSubscriber;
 use Mautic\LeadBundle\Event\LeadEvent;
 use Mautic\LeadBundle\LeadEvents;
 use MauticPlugin\MauticRevenueEventBundle\Event\RevenueChangeEvent;
+use MauticPlugin\MauticRevenueEventBundle\Helper\IntegrationSettings;
+use MauticPlugin\MauticRevenueEventBundle\Integration\RevenueEventIntegration;
 use MauticPlugin\MauticRevenueEventBundle\MauticRevenueEventEvents;
 use MauticPlugin\MauticContactLedgerBundle\EventListener\ContactLedgerContextSubscriber;
 
@@ -27,12 +29,18 @@ class LeadSubscriber extends CommonSubscriber
     protected $context;
 
     /**
+     * @var IntegrationSettings
+     */
+    private $integrationSettings;
+
+    /**
      * LeadSubscriber constructor.
      *
      * @param RevenueEventContextSubscriber|null $context
      */
-    public function __construct(RevenueEventContextSubscriber $context = null) {
+    public function __construct($context = null){ //, IntegrationSettings $integrationSettings) {
         $this->context = $context;
+        //$this->integrationSettings = $integrationSettings;
     }
 
     /**
@@ -71,8 +79,10 @@ class LeadSubscriber extends CommonSubscriber
      */
     private function checkForValidCampaign()
     {
-        //TODO: make sure conversion tracking turned on for this campaign
-        return $this->campaign() ? true : false;
+        return true;
+        $campaign_list = $this->integrationSettings->getIntegrationSetting(RevenueEventIntegration::CAMPAIGN_SETTINGS_NAMESPACE);
+
+        return ($this->campaign()->getId() && $campaign_list[$this->campaign()->getId()]);
     }
 
     /**

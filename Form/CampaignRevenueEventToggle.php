@@ -55,13 +55,7 @@ class CampaignRevenueEventToggle extends AbstractTypeExtension
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $on_or_off = true;
-
-        $this->integrationSettingsHelper->setIntegrationSetting('campaigns', [1 => false,2 => true,3 => false,4 => false,5 => true,5 => false]);
-
-        $msg = json_encode($this->integrationSettingsHelper->getIntegrationSetting('campaigns'));
-
-        file_put_contents('/Users/westonwatson/test.log', $msg , FILE_APPEND);
+        $on_or_off = ($this->getIntegrationSettingsCampaignsList()[$this->getCampaignId($options)]);
 
         $builder->add('revenue_event_toggle',
             YesNoButtonGroupType::class,
@@ -97,5 +91,15 @@ class CampaignRevenueEventToggle extends AbstractTypeExtension
         return 'campaignRevenueEventToggle_config';
     }
 
+    private function getIntegrationSettingsCampaignsList()
+    {
+        return $this->integrationSettingsHelper->getIntegrationSetting(RevenueEventIntegration::CAMPAIGN_SETTINGS_NAMESPACE);
+    }
 
+    private function getCampaignId($options)
+    {
+        $action = $options['action'];
+        $exploded = explode('/', $action);
+        return (int) $exploded[count($exploded) -1];
+    }
 }

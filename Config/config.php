@@ -26,12 +26,21 @@ return [
             ]
         ],
         'events' => [
+            'mautic.revenueevent.campaign.save.subscriber' => [
+                'class' => \MauticPlugin\MauticRevenueEventBundle\EventListener\CampaignSaveSubscriber::class,
+                'arguments' => [
+                    'mautic.revenueevent.helper.integrationsettings'
+                ]
+            ],
+            'mautic.revenueevent.lead.subscriber'         => [
+                'class' => \MauticPlugin\MauticRevenueEventBundle\EventListener\LeadSubscriber::class,
+                'arguments' => [
+                    '@mautic.contactledger.subscriber.context_create',
+                    'mautic.revenueevent.helper.integrationsettings',
+                ],
+            ],
             'mautic.revenueevent.change.subscriber'       => [
                 'class' => \MauticPlugin\MauticRevenueEventBundle\EventListener\RevenueEventSubscriber::class,
-            ],
-            'mautic.revenueevent.campaignform.subscriber' => [
-                'class'     => \MauticPlugin\MauticRevenueEventBundle\EventListener\CampaignFormSubscriber::class,
-                'arguments' => ['mautic.revenueevent.helper.integrationsettings']
             ],
         ],
         'extension' => [
