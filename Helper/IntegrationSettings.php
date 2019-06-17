@@ -11,9 +11,9 @@
 
 namespace MauticPlugin\MauticRevenueEventBundle\Helper;
 
-use Doctrine\ORM\EntityManager;
-use Mautic\PluginBundle\Entity\IntegrationEntity;
+use Mautic\PluginBundle\Entity\Integration;
 use Mautic\PluginBundle\Helper\IntegrationHelper;
+use Mautic\PluginBundle\Integration\AbstractIntegration;
 use MauticPlugin\MauticRevenueEventBundle\Integration\RevenueEventIntegration;
 
 /**
@@ -24,26 +24,24 @@ class IntegrationSettings
     /** @var IntegrationHelper */
     protected $integrationHelper;
 
-    private $integrationSettings;
+    /** @var array */
+    private $integrationEntityFeatureSettings;
 
-    /**
-     * @var EntityManager
-     */
-    private $entityManager;
-
+    /** @var AbstractIntegration */
     private $integrationObject;
+
+    /** @var Integration $integrationEntity */
+    private $integrationEntity;
 
     /**
      * Api constructor.
      *
-     * @param IntegrationHelper        $integrationHelper
+     * @param IntegrationHelper $integrationHelper
      */
     public function __construct(
-        IntegrationHelper $integrationHelper,
-        EntityManager $entityManager
+        IntegrationHelper $integrationHelper
     ) {
         $this->integrationHelper = $integrationHelper;
-        $this->entityManager = $entityManager;
     }
 
     /**
@@ -59,32 +57,14 @@ class IntegrationSettings
         $this->loadIntegrationSettings();
 
         if ($key) {
-            if (isset($this->integrationSettings[$key])) {
-                return $this->integrationSettings[$key];
+            if (isset($this->integrationEntityFeatureSettings[$key])) {
+                return $this->integrationEntityFeatureSettings[$key];
             } else {
                 return $default;
             }
         } else {
-            return $this->integrationSettings;
+            return $this->integrationEntityFeatureSettings;
         }
-    }
-
-    /**
-     * @param string $key
-     * @param        $value
-     *
-     * @return array
-     */
-    public function setIntegrationSetting($key = '', $value)
-    {
-        $this->loadIntegrationSettings();
-
-        $this->integrationSettings[$key] = $value;
-
-        $repo = $this->entityManager->getRepository('MauticPluginBundle:IntegrationEntity');
-        $repo->saveEntity($this->integrationObject);
-
-        return $this->integrationSettings;
     }
 
     /**
@@ -92,16 +72,40 @@ class IntegrationSettings
      */
     private function loadIntegrationSettings()
     {
-        if (null === $this->integrationSettings) {
-            $this->integrationSettings = [];
-            $this->integrationObject   = $this->integrationHelper->getIntegrationObject(RevenueEventIntegration::NAME);
-            $objectSettings            = $this->integrationObject->getIntegrationSettings();
-            if ($objectSettings) {
-                $this->integrationSettings = $objectSettings->getFeatureSettings();
+        if (null === $this->integrationEntityFeatureSettings) {
+            $this->integrationEntityFeatureSettings = [];
+            $this->integrationObject                = $this->integrationHelper->getIntegrationObject(
+                RevenueEventIntegration::NAME
+            );
+            /** @var Integration $integrationEntity */
+            $this->integrationEntity = $this->integrationObject->getIntegrationSettings();
+            if ($integrationEntity) {
+                $this->integrationEntityFeatureSettings = $integrationEntity->getFeatureSettings();
             }
         }
 
-        return $this->integrationSettings;
+        return $this->integrationEntityFeatureSettings;
+    }
+
+    /**
+     * @param string $key
+     * @param string $value
+     *
+     * @return array
+     */
+    public function setIntegrationSetting($key, $value)
+    {
+        $this->loadIntegrationSettings();
+
+        $this->integrationEntityFeatureSettings = array_merge(
+            $this->integrationEntityFeatureSettings,
+            [$key => $value]
+        );
+        $this->integrationEntity->setFeatureSettings($this->integrationEntityFeatureSettings);
+        $this->integrationObject->setIntegrationSettings($this->integrationEntity);
+        $this->integrationObject->persistIntegrationSettings();
+
+        return $this->integrationEntityFeatureSettings;
     }
 
 }

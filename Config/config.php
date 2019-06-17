@@ -21,8 +21,7 @@ return [
             'mautic.revenueevent.helper.integrationsettings' => [
                 'class'     => \MauticPlugin\MauticRevenueEventBundle\Helper\IntegrationSettings::class,
                 'arguments' => [
-                    'mautic.helper.integration',
-                    'doctrine.orm.entity_manager'
+                    'mautic.helper.integration'
                 ]
             ]
         ],
