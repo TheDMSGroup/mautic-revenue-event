@@ -79,8 +79,8 @@ class IntegrationSettings
             );
             /** @var Integration $integrationEntity */
             $this->integrationEntity = $this->integrationObject->getIntegrationSettings();
-            if ($integrationEntity) {
-                $this->integrationEntityFeatureSettings = $integrationEntity->getFeatureSettings();
+            if ($this->integrationEntity) {
+                $this->integrationEntityFeatureSettings = $this->integrationEntity->getFeatureSettings();
             }
         }
 
