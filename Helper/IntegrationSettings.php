@@ -77,7 +77,7 @@ class IntegrationSettings
             $this->integrationObject                = $this->integrationHelper->getIntegrationObject(
                 RevenueEventIntegration::NAME
             );
-            /** @var Integration $integrationEntity */
+            /* @var Integration $integrationEntity */
             $this->integrationEntity = $this->integrationObject->getIntegrationSettings();
             if ($this->integrationEntity) {
                 $this->integrationEntityFeatureSettings = $this->integrationEntity->getFeatureSettings();
@@ -107,5 +107,4 @@ class IntegrationSettings
 
         return $this->integrationEntityFeatureSettings;
     }
-
 }

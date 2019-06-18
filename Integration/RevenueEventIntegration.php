@@ -12,12 +12,12 @@ class RevenueEventIntegration extends AbstractIntegration
     const CAMPAIGN_SETTINGS_NAMESPACE = 'campaigns';
 
     /**
-     * Integration Display Name
+     * Integration Display Name.
      */
     const DISPLAY_NAME = 'Revenue Event';
 
     /**
-     * Integration Name
+     * Integration Name.
      */
     const NAME = 'RevenueEvent';
 

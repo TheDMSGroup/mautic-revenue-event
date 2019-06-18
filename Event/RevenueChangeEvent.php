@@ -6,16 +6,9 @@ use Symfony\Component\EventDispatcher\Event;
 
 /**
  * Class RevenueChangeEvent.
- *
- * @package MauticPlugin\MauticRevenueEventBundle\Event
  */
 class RevenueChangeEvent extends Event
 {
-    /**
-     * @var array
-     */
-    private $webhook_payload = [];
-
     /**
      * RevenueChangeEvent constructor.
      *

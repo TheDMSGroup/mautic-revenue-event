@@ -18,7 +18,6 @@ use MauticPlugin\MauticRevenueEventBundle\Event\RevenueChangeEvent;
 use MauticPlugin\MauticRevenueEventBundle\Helper\IntegrationSettings;
 use MauticPlugin\MauticRevenueEventBundle\Integration\RevenueEventIntegration;
 use MauticPlugin\MauticRevenueEventBundle\MauticRevenueEventEvents;
-use MauticPlugin\MauticContactLedgerBundle\EventListener\ContactLedgerContextSubscriber;
 
 /**
  * Class LeadSubscriber.
@@ -38,9 +37,10 @@ class LeadSubscriber extends CommonSubscriber
      *
      * @param RevenueEventContextSubscriber|null $context
      */
-    public function __construct($context = null){ //, IntegrationSettings $integrationSettings) {
+    public function __construct($context = null, $integrationSettings = null)
+    {   //IntegrationSettings $integrationSettings) {
         $this->context = $context;
-        //$this->integrationSettings = $integrationSettings;
+        $this->integrationSettings = $integrationSettings;
     }
 
     /**
@@ -79,10 +79,14 @@ class LeadSubscriber extends CommonSubscriber
      */
     private function checkForValidCampaign()
     {
-        return true;
-        $campaign_list = $this->integrationSettings->getIntegrationSetting(RevenueEventIntegration::CAMPAIGN_SETTINGS_NAMESPACE);
+        $campaignId   = $this->campaign()->getId();
+        $campaignList = $this->integrationSettings->getIntegrationSetting(RevenueEventIntegration::CAMPAIGN_SETTINGS_NAMESPACE);
 
-        return ($this->campaign()->getId() && $campaign_list[$this->campaign()->getId()]);
+        if (array_key_exists($campaignId, $campaignList)) {
+            return $campaignList[$campaignId];
+        }
+
+        return false;
     }
 
     /**

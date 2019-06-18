@@ -9,33 +9,33 @@
  */
 
 /**
- * Revenue Event Bundle Configurations
+ * Revenue Event Bundle Configurations.
  */
 return [
     'name'        => 'Revenue Event',
     'description' => 'W4-Engine Tracking for Lead Attribution Changes.',
     'version'     => '0.0.2',
     'author'      => 'Weston Watson',
-    'services' => [
+    'services'    => [
         'helpers' => [
             'mautic.revenueevent.helper.integrationsettings' => [
                 'class'     => \MauticPlugin\MauticRevenueEventBundle\Helper\IntegrationSettings::class,
                 'arguments' => [
-                    'mautic.helper.integration'
-                ]
-            ]
+                    'mautic.helper.integration',
+                ],
+            ],
         ],
         'events' => [
             'mautic.revenueevent.campaign.save.subscriber' => [
-                'class' => \MauticPlugin\MauticRevenueEventBundle\EventListener\CampaignSaveSubscriber::class,
+                'class'     => \MauticPlugin\MauticRevenueEventBundle\EventListener\CampaignSaveSubscriber::class,
                 'arguments' => [
-                    'mautic.revenueevent.helper.integrationsettings'
-                ]
+                    'mautic.revenueevent.helper.integrationsettings',
+                ],
             ],
             'mautic.revenueevent.lead.subscriber'         => [
-                'class' => \MauticPlugin\MauticRevenueEventBundle\EventListener\LeadSubscriber::class,
+                'class'     => \MauticPlugin\MauticRevenueEventBundle\EventListener\LeadSubscriber::class,
                 'arguments' => [
-                    '@mautic.contactledger.subscriber.context_create',
+                    'mautic.contactledger.subscriber.context_create',
                     'mautic.revenueevent.helper.integrationsettings',
                 ],
             ],
@@ -56,5 +56,5 @@ return [
             ],
     ],
     'categories' => [],
-    ]
+    ],
 ];

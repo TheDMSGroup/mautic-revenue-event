@@ -11,15 +11,14 @@
 
 namespace MauticPlugin\MauticRevenueEventBundle\Form;
 
-use Mautic\CoreBundle\Form\Type\YesNoButtonGroupType;
-use Symfony\Component\Form\Extension\Core\Type\TextType;
-use MauticPlugin\MauticRevenueEventBundle\Integration\RevenueEventIntegration;
 use Mautic\CampaignBundle\Form\Type\CampaignType;
+use Mautic\CoreBundle\Form\Type\YesNoButtonGroupType;
+use Mautic\PluginBundle\Helper\IntegrationHelper;
+use MauticPlugin\MauticRevenueEventBundle\Helper\IntegrationSettings;
+use MauticPlugin\MauticRevenueEventBundle\Integration\RevenueEventIntegration;
 use Symfony\Component\Form\AbstractTypeExtension;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Mautic\PluginBundle\Helper\IntegrationHelper;
-use MauticPlugin\MauticRevenueEventBundle\Helper\IntegrationSettings;
 
 /**
  * Class CampaignRevenueEventToggle.
@@ -55,13 +54,11 @@ class CampaignRevenueEventToggle extends AbstractTypeExtension
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $on_or_off = ($this->getIntegrationSettingsCampaignsList()[$this->getCampaignId($options)]);
-
         $builder->add('revenue_event_toggle',
             YesNoButtonGroupType::class,
             [
-                'mapped' => false,
-                'data' => $on_or_off,
+                'mapped'     => false,
+                'data'       => $this->isCampaignActive($options),
                 'label'      => 'mautic.revenueevent.campaign.toggle.label',
                 'label_attr' => ['class' => 'control-label fr-box'],
                 'attr'       => [
@@ -91,15 +88,41 @@ class CampaignRevenueEventToggle extends AbstractTypeExtension
         return 'campaignRevenueEventToggle_config';
     }
 
+    /**
+     * @param $options
+     *
+     * @return bool
+     */
+    private function isCampaignActive($options)
+    {
+        $campaignId   = (int) $this->getCampaignId($options);
+        $campaignList = (array) $this->getIntegrationSettingsCampaignsList();
+
+        if (array_key_exists($campaignId, $campaignList)) {
+            return $campaignList[$campaignId];
+        }
+
+        return false;
+    }
+
+    /**
+     * @return array|mixed|string
+     */
     private function getIntegrationSettingsCampaignsList()
     {
         return $this->integrationSettingsHelper->getIntegrationSetting(RevenueEventIntegration::CAMPAIGN_SETTINGS_NAMESPACE);
     }
 
+    /**
+     * @param $options
+     *
+     * @return int
+     */
     private function getCampaignId($options)
     {
-        $action = $options['action'];
+        $action   = $options['action'];
         $exploded = explode('/', $action);
-        return (int) $exploded[count($exploded) -1];
+
+        return (int) $exploded[count($exploded) - 1];
     }
 }

@@ -11,8 +11,8 @@
 namespace MauticPlugin\MauticRevenueEventBundle\EventListener;
 
 use Mautic\WebhookBundle\EventListener\WebhookSubscriberBase;
-use MauticPlugin\MauticRevenueEventBundle\MauticRevenueEventEvents;
 use MauticPlugin\MauticRevenueEventBundle\Event\RevenueChangeEvent;
+use MauticPlugin\MauticRevenueEventBundle\MauticRevenueEventEvents;
 
 class RevenueEventSubscriber extends WebhookSubscriberBase
 {
@@ -22,7 +22,7 @@ class RevenueEventSubscriber extends WebhookSubscriberBase
     public static function getSubscribedEvents()
     {
         return [
-            MauticRevenueEventEvents::REVENUE_CHANGE => 'onRevenueChange'
+            MauticRevenueEventEvents::REVENUE_CHANGE => 'onRevenueChange',
         ];
     }
 
