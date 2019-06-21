@@ -1,9 +1,11 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: westonwatson
- * Date: 2019-06-17
- * Time: 13:59.
+/*
+ * @copyright   2019 Mautic Contributors. All rights reserved
+ * @author      Digital Media Solutions, LLC
+ *
+ * @link        http://mautic.org
+ *
+ * @license     GNU/GPLv3 http://www.gnu.org/licenses/gpl-3.0.html
  */
 
 namespace MauticPlugin\MauticRevenueEventBundle\EventListener;
@@ -40,12 +42,19 @@ class CampaignSaveSubscriber extends CommonSubscriber
         ];
     }
 
+    /**
+     * @param CampaignEvent $campaignEvent
+     */
     public function onCampaignPreSave(CampaignEvent $campaignEvent)
     {
         $integrationSettings = $this->getAndUpdateCampaignsList($campaignEvent);
-        file_put_contents('/Users/westonwatson/test.log', "\n\nCampaigns:\n".json_encode($integrationSettings));
     }
 
+    /**
+     * @param CampaignEvent $campaignEvent
+     *
+     * @return array
+     */
     private function getAndUpdateCampaignsList(CampaignEvent $campaignEvent)
     {
         $campaignId                         = $campaignEvent->getCampaign()->getId();

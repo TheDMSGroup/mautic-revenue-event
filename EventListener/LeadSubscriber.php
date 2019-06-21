@@ -24,7 +24,7 @@ use MauticPlugin\MauticRevenueEventBundle\MauticRevenueEventEvents;
  */
 class LeadSubscriber extends CommonSubscriber
 {
-    /** @var RevenueEventContextSubscriber */
+    /** @var \MauticPlugin\MauticContactLedgerBundle\EventListener\ContactLedgerContextSubscriber */
     protected $context;
 
     /**
@@ -34,12 +34,10 @@ class LeadSubscriber extends CommonSubscriber
 
     /**
      * LeadSubscriber constructor.
-     *
-     * @param RevenueEventContextSubscriber|null $context
      */
     public function __construct($context = null, $integrationSettings = null)
-    {   //IntegrationSettings $integrationSettings) {
-        $this->context = $context;
+    {
+        $this->context             = $context;
         $this->integrationSettings = $integrationSettings;
     }
 
@@ -49,7 +47,7 @@ class LeadSubscriber extends CommonSubscriber
     public static function getSubscribedEvents()
     {
         return [
-            LeadEvents::LEAD_POST_SAVE => ['postSaveAttributionCheck', -1],
+            LeadEvents::LEAD_POST_SAVE => ['postSaveAttributionCheck', -2],
         ];
     }
 
@@ -60,15 +58,22 @@ class LeadSubscriber extends CommonSubscriber
     {
         $lead = $event->getLead();
 
+        //Only send events for configured campaigns
         if (!$this->checkForValidCampaign()) {
             return;
         }
 
-        if ($this->checkForAttributionChange($lead)) {
+        //Ensure that attribution has changed
+        if (!$this->checkForAttributionChange($lead)) {
+            return;
+        }
+
+        //Only send event if lead has clickId
+        if ($clickId = $lead->getFieldValue('clickid')) {
             $this->dispatchRevenueEvent(
                 $this->campaign()->getId(),
-                $lead->getId(), //TODO: change to Event/Ledger ID?
-                $lead->getFieldValue('clickid'), //TODO: check for clickID before attempting to send post
+                $lead->getId(),
+                $clickId,
                 $lead->getAttribution()
             );
         }
@@ -97,6 +102,10 @@ class LeadSubscriber extends CommonSubscriber
     private function checkForAttributionChange($lead)
     {
         $changes = $lead->getChanges(false);
+
+        if (!isset($changes['fields']) || !isset($changes['fields']['attribution'])) {
+            $changes = $lead->getChanges(true);
+        }
 
         if (isset($changes['fields']) && isset($changes['fields']['attribution'])) {
             $oldValue = $changes['fields']['attribution'][0];
@@ -134,8 +143,6 @@ class LeadSubscriber extends CommonSubscriber
             'price'   => $price,
         ];
 
-        $event = new RevenueChangeEvent($payload);
-
-        $this->dispatcher->dispatch(MauticRevenueEventEvents::REVENUE_CHANGE, $event);
+        $this->dispatcher->dispatch(MauticRevenueEventEvents::REVENUE_CHANGE, (new RevenueChangeEvent($payload)));
     }
 }

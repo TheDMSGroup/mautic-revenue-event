@@ -2,21 +2,37 @@
 
 namespace MauticPlugin\MauticRevenueEventBundle\Event;
 
+use MauticPlugin\MauticRevenueEventBundle\Contract\RevenueEvents;
 use Symfony\Component\EventDispatcher\Event;
 
 /**
  * Class RevenueChangeEvent.
  */
-class RevenueChangeEvent extends Event
+class RevenueChangeEvent extends Event implements RevenueEvents
 {
+    /**
+     * W4 Engine (DEV).
+     */
+    const W4_DEV_API_ENDPOINT = 'http://engine.w4dev.net/postBack';
+
+    /**
+     * W4 Engine (PROD).
+     */
+    const W4_API_ENDPOINT = 'http://localhost/test.php'; //?cid=**VARIABLE**&refid=&clickid=&price='
+
+    /**
+     * @var array
+     */
+    private $payload;
+
     /**
      * RevenueChangeEvent constructor.
      *
      * @param array $webhook_payload
      */
-    public function __construct(array $webhook_payload)
+    public function __construct($payload)
     {
-        $this->webhook_payload = $webhook_payload;
+        $this->payload = $payload;
     }
 
     /**
@@ -24,6 +40,16 @@ class RevenueChangeEvent extends Event
      */
     public function getPayload()
     {
-        return $this->webhook_payload;
+        return $this->payload;
+    }
+
+    /**
+     * @return string
+     */
+    public function getEndpoint()
+    {
+        return self::W4_DEV_API_ENDPOINT;
+
+        return self::W4_API_ENDPOINT;
     }
 }

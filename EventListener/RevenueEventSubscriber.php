@@ -10,12 +10,28 @@
 
 namespace MauticPlugin\MauticRevenueEventBundle\EventListener;
 
+use GuzzleHttp\Client;
 use Mautic\WebhookBundle\EventListener\WebhookSubscriberBase;
 use MauticPlugin\MauticRevenueEventBundle\Event\RevenueChangeEvent;
 use MauticPlugin\MauticRevenueEventBundle\MauticRevenueEventEvents;
 
 class RevenueEventSubscriber extends WebhookSubscriberBase
 {
+    /**
+     * @var Client
+     */
+    private $client;
+
+    /**
+     * RevenueEventSubscriber constructor.
+     */
+    public function __construct()
+    {
+        $this->client = new Client();
+
+        parent::__construct();
+    }
+
     /**
      * {@inheritdoc}
      */
@@ -31,6 +47,8 @@ class RevenueEventSubscriber extends WebhookSubscriberBase
      */
     public function onRevenueChange(RevenueChangeEvent $event)
     {
-        //TODO: FIRE WEBHOOK
+        $promise = $this->client->post($event->getEndpoint(), ['form_params' => $event->getPayload()]);
+
+        return true;
     }
 }
