@@ -1,0 +1,13 @@
+{
+    "name": "CHANGEME/mautic-revenue-event-bundle",
+    "description": "Send Attribution/Revenue Events to W4 Conversion Tracker",
+    "type": "composer-plugin",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "wwatson",
+            "email": "wwatson@thedmsgrp.com"
+        }
+    ],
+    "require": {}
+}
