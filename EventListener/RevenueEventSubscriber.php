@@ -47,8 +47,6 @@ class RevenueEventSubscriber extends WebhookSubscriberBase
      */
     public function onRevenueChange(RevenueChangeEvent $event)
     {
-        $response = $this->client->get($event->getEndpoint());
-
-        return true;
+        return $this->client->getAsync($event->getEndpoint());
     }
 }

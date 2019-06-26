@@ -18,13 +18,14 @@ use MauticPlugin\MauticRevenueEventBundle\Event\RevenueChangeEvent;
 use MauticPlugin\MauticRevenueEventBundle\Helper\IntegrationSettings;
 use MauticPlugin\MauticRevenueEventBundle\Integration\RevenueEventIntegration;
 use MauticPlugin\MauticRevenueEventBundle\MauticRevenueEventEvents;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Class LeadSubscriber.
  */
 class LeadSubscriber extends CommonSubscriber
 {
-    /** @var \MauticPlugin\MauticContactLedgerBundle\EventListener\ContactLedgerContextSubscriber */
+    /** @var mixed */
     protected $context;
 
     /**
@@ -35,9 +36,8 @@ class LeadSubscriber extends CommonSubscriber
     /**
      * LeadSubscriber constructor.
      */
-    public function __construct($context = null, $integrationSettings = null)
+    public function __construct($integrationSettings = null)
     {
-        $this->context             = $context;
         $this->integrationSettings = $integrationSettings;
     }
 
@@ -56,6 +56,9 @@ class LeadSubscriber extends CommonSubscriber
      */
     public function postSaveAttributionCheck(LeadEvent $event)
     {
+        $container     = $event->getDispatcher()->getContainer();
+        $this->context = $container->get('@mautic.contactledger.subscriber.context_create', ContainerInterface::IGNORE_ON_INVALID_REFERENCE);
+
         $lead = $event->getLead();
 
         //Only send events for configured campaigns
@@ -89,9 +92,9 @@ class LeadSubscriber extends CommonSubscriber
         }
 
         $campaignId   = $this->campaign()->getId();
-        $campaignList = $this->integrationSettings->getIntegrationSetting(RevenueEventIntegration::CAMPAIGN_SETTINGS_NAMESPACE) ?? [];
+        $campaignList = $this->integrationSettings->getIntegrationSetting(RevenueEventIntegration::CAMPAIGN_SETTINGS_NAMESPACE);
 
-        if (array_key_exists($campaignId, $campaignList)) {
+        if (array_key_exists($campaignId, $campaignList ? $campaignList : [])) {
             return $campaignList[$campaignId];
         }
 
@@ -139,7 +142,7 @@ class LeadSubscriber extends CommonSubscriber
      * @param      $price
      * @param bool $performance
      */
-    private function dispatchRevenueEvent($cid, $refid, $clickid, $price, $performance = true)
+    private function dispatchRevenueEvent($cid, $refid, $clickid, $price, $performance = false)
     {
         $payload = [
             'cid'     => $cid,
@@ -152,6 +155,8 @@ class LeadSubscriber extends CommonSubscriber
             $payload['performance'] = 'true';
         }
 
-        $this->dispatcher->dispatch(MauticRevenueEventEvents::REVENUE_CHANGE, (new RevenueChangeEvent($payload)));
+        $endpoint = $this->integrationSettings->getIntegrationSetting(RevenueEventIntegration::ENDPOINT_SETTING_NAMESPACE);
+
+        $this->dispatcher->dispatch(MauticRevenueEventEvents::REVENUE_CHANGE, (new RevenueChangeEvent($payload, $endpoint)));
     }
 }

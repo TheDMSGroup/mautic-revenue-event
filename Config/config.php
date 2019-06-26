@@ -35,7 +35,7 @@ return [
             'mautic.revenueevent.lead.subscriber'         => [
                 'class'     => \MauticPlugin\MauticRevenueEventBundle\EventListener\LeadSubscriber::class,
                 'arguments' => [
-                    '@mautic.contactledger.subscriber.context_create',
+                    //'@mautic.contactledger.subscriber.context_create',
                     'mautic.revenueevent.helper.integrationsettings',
                 ],
             ],
