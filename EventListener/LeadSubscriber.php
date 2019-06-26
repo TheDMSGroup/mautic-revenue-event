@@ -35,9 +35,8 @@ class LeadSubscriber extends CommonSubscriber
     /**
      * LeadSubscriber constructor.
      */
-    public function __construct($context = null, $integrationSettings = null)
+    public function __construct($integrationSettings = null)
     {
-        $this->context             = $context;
         $this->integrationSettings = $integrationSettings;
     }
 
@@ -56,6 +55,9 @@ class LeadSubscriber extends CommonSubscriber
      */
     public function postSaveAttributionCheck(LeadEvent $event)
     {
+        $this->container = $event->getDispatcher()->getContainer();
+        $this->context = $this->container->get('mautic.contactledger.subscriber.context_create');
+
         $lead = $event->getLead();
 
         //Only send events for configured campaigns
