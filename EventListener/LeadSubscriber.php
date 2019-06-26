@@ -18,6 +18,7 @@ use MauticPlugin\MauticRevenueEventBundle\Event\RevenueChangeEvent;
 use MauticPlugin\MauticRevenueEventBundle\Helper\IntegrationSettings;
 use MauticPlugin\MauticRevenueEventBundle\Integration\RevenueEventIntegration;
 use MauticPlugin\MauticRevenueEventBundle\MauticRevenueEventEvents;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Class LeadSubscriber.
@@ -55,8 +56,8 @@ class LeadSubscriber extends CommonSubscriber
      */
     public function postSaveAttributionCheck(LeadEvent $event)
     {
-        $this->container = $event->getDispatcher()->getContainer();
-        $this->context = $this->container->get('mautic.contactledger.subscriber.context_create');
+        $container = $event->getDispatcher()->getContainer();
+        $this->context = $this->container->get('@mautic.contactledger.subscriber.context_create', ContainerInterface::IGNORE_ON_INVALID_REFERENCE);
 
         $lead = $event->getLead();
 
