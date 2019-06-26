@@ -57,7 +57,7 @@ class LeadSubscriber extends CommonSubscriber
     public function postSaveAttributionCheck(LeadEvent $event)
     {
         $container = $event->getDispatcher()->getContainer();
-        $this->context = $this->container->get('@mautic.contactledger.subscriber.context_create', ContainerInterface::IGNORE_ON_INVALID_REFERENCE);
+        $this->context = $container->get('@mautic.contactledger.subscriber.context_create', ContainerInterface::IGNORE_ON_INVALID_REFERENCE);
 
         $lead = $event->getLead();
 
