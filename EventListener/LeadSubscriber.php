@@ -84,8 +84,12 @@ class LeadSubscriber extends CommonSubscriber
      */
     private function checkForValidCampaign()
     {
+        if (!$this->campaign()) {
+            return false;
+        }
+
         $campaignId   = $this->campaign()->getId();
-        $campaignList = $this->integrationSettings->getIntegrationSetting(RevenueEventIntegration::CAMPAIGN_SETTINGS_NAMESPACE);
+        $campaignList = $this->integrationSettings->getIntegrationSetting(RevenueEventIntegration::CAMPAIGN_SETTINGS_NAMESPACE) ?? [];
 
         if (array_key_exists($campaignId, $campaignList)) {
             return $campaignList[$campaignId];
@@ -129,12 +133,13 @@ class LeadSubscriber extends CommonSubscriber
     }
 
     /**
-     * @param $cid
-     * @param $refid
-     * @param $clickid
-     * @param $price
+     * @param      $cid
+     * @param      $refid
+     * @param      $clickid
+     * @param      $price
+     * @param bool $performance
      */
-    private function dispatchRevenueEvent($cid, $refid, $clickid, $price)
+    private function dispatchRevenueEvent($cid, $refid, $clickid, $price, $performance = true)
     {
         $payload = [
             'cid'     => $cid,
@@ -142,6 +147,10 @@ class LeadSubscriber extends CommonSubscriber
             'clickid' => $clickid,
             'price'   => $price,
         ];
+
+        if ($performance) {
+            $payload['performance'] = 'true';
+        }
 
         $this->dispatcher->dispatch(MauticRevenueEventEvents::REVENUE_CHANGE, (new RevenueChangeEvent($payload)));
     }
