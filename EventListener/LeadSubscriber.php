@@ -25,7 +25,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
  */
 class LeadSubscriber extends CommonSubscriber
 {
-    /** @var \MauticPlugin\MauticContactLedgerBundle\EventListener\ContactLedgerContextSubscriber */
+    /** @var mixed */
     protected $context;
 
     /**
@@ -56,7 +56,7 @@ class LeadSubscriber extends CommonSubscriber
      */
     public function postSaveAttributionCheck(LeadEvent $event)
     {
-        $container = $event->getDispatcher()->getContainer();
+        $container     = $event->getDispatcher()->getContainer();
         $this->context = $container->get('@mautic.contactledger.subscriber.context_create', ContainerInterface::IGNORE_ON_INVALID_REFERENCE);
 
         $lead = $event->getLead();
