@@ -1,7 +1,13 @@
 {
     "name": "thedmsgroup/mautic-revenue-event-bundle",
     "description": "Send Attribution/Revenue Events to W4 Conversion Tracker",
-    "type": "composer-plugin",
+    "keywords": [
+      "mautic",
+      "marketing",
+      "marketing automation",
+      "plugin"
+    ],
+    "type": "mautic-plugin",
     "license": "MIT",
     "authors": [
         {
@@ -9,5 +15,7 @@
             "email": "wwatson@thedmsgrp.com"
         }
     ],
-    "require": {}
+    "require": {
+     "mautic/composer-plugin": "^1.0"
+   }
 }
