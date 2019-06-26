@@ -139,7 +139,7 @@ class LeadSubscriber extends CommonSubscriber
      * @param      $price
      * @param bool $performance
      */
-    private function dispatchRevenueEvent($cid, $refid, $clickid, $price, $performance = true)
+    private function dispatchRevenueEvent($cid, $refid, $clickid, $price, $performance = false)
     {
         $payload = [
             'cid'     => $cid,
@@ -152,6 +152,8 @@ class LeadSubscriber extends CommonSubscriber
             $payload['performance'] = 'true';
         }
 
-        $this->dispatcher->dispatch(MauticRevenueEventEvents::REVENUE_CHANGE, (new RevenueChangeEvent($payload)));
+        $endpoint = $this->integrationSettings->getIntegrationSetting(RevenueEventIntegration::ENDPOINT_SETTING_NAMESPACE);
+
+        $this->dispatcher->dispatch(MauticRevenueEventEvents::REVENUE_CHANGE, (new RevenueChangeEvent($payload, $endpoint)));
     }
 }

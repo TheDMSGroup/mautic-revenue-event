@@ -26,13 +26,19 @@ class RevenueChangeEvent extends Event implements RevenueEvents
     private $payload;
 
     /**
+     * @var
+     */
+    private $endpoint;
+
+    /**
      * RevenueChangeEvent constructor.
      *
      * @param array $webhook_payload
      */
-    public function __construct($payload)
+    public function __construct($payload, $endpoint = false)
     {
-        $this->payload = $payload;
+        $this->payload  = $payload;
+        $this->endpoint = $endpoint;
     }
 
     /**
@@ -48,6 +54,10 @@ class RevenueChangeEvent extends Event implements RevenueEvents
      */
     public function getEndpoint()
     {
-        return self::W4_DEV_API_ENDPOINT.'?'.http_build_query($this->payload);
+        if (!$this->endpoint) {
+            $this->endpoint = self::W4_API_ENDPOINT;
+        }
+
+        return $this->endpoint.'?'.http_build_query($this->payload);
     }
 }
