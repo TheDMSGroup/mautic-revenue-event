@@ -89,9 +89,9 @@ class LeadSubscriber extends CommonSubscriber
         }
 
         $campaignId   = $this->campaign()->getId();
-        $campaignList = $this->integrationSettings->getIntegrationSetting(RevenueEventIntegration::CAMPAIGN_SETTINGS_NAMESPACE) ?: [];
+        $campaignList = $this->integrationSettings->getIntegrationSetting(RevenueEventIntegration::CAMPAIGN_SETTINGS_NAMESPACE);
 
-        if (array_key_exists($campaignId, $campaignList)) {
+        if (array_key_exists($campaignId, $campaignList ? $campaignList : [])) {
             return $campaignList[$campaignId];
         }
 
